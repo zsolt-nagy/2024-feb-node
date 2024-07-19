@@ -73,3 +73,18 @@ app.post("/api/list/new", (req, res) => {
         }
     );
 });
+
+app.delete("/api/list/:id", (req, res) => {
+    db.run(
+        `DELETE FROM ShoppingList
+         WHERE id = ?`,
+        [req.params.id],
+        (error, response) => {
+            if (error) {
+                res.status(500).json({ error });
+            } else {
+                res.status(200).json({ status: true });
+            }
+        }
+    );
+});
