@@ -47,7 +47,7 @@ app.get("/", (req, res) => {
     res.status(200).json({ status: true });
 });
 
-function dbResponseHandler(error, _) {
+function dbResponseHandler(error, res) {
     if (error) {
         res.status(500).json({ error });
     } else {
@@ -72,7 +72,7 @@ app.post("/api/list/new", (req, res) => {
         VALUES (?, ?);        
     `,
         [req.body.item, req.body.quantity],
-        dbResponseHandler
+        (error, _) => dbResponseHandler(error, res)
     );
 });
 
@@ -81,7 +81,7 @@ app.delete("/api/list/:id", (req, res) => {
         `DELETE FROM ShoppingList
          WHERE id = ?`,
         [req.params.id],
-        dbResponseHandler
+        (error, _) => dbResponseHandler(error, res)
     );
 });
 
@@ -93,6 +93,6 @@ app.put("/api/list/:id", (req, res) => {
             WHERE id = ?
         `,
         [req.body.item, req.body.quantity, req.params.id],
-        dbResponseHandler
+        (error, _) => dbResponseHandler(error, res)
     );
 });
