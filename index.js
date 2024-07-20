@@ -47,6 +47,14 @@ app.get("/", (req, res) => {
     res.status(200).json({ status: true });
 });
 
+function dbResponseHandler(error, _) {
+    if (error) {
+        res.status(500).json({ error });
+    } else {
+        res.status(200).json({ status: true });
+    }
+}
+
 app.get("/api/list", (req, res) => {
     db.all("SELECT * FROM ShoppingList", (error, rows) => {
         if (error) {
@@ -64,13 +72,7 @@ app.post("/api/list/new", (req, res) => {
         VALUES (?, ?);        
     `,
         [req.body.item, req.body.quantity],
-        (error, response) => {
-            if (error) {
-                res.status(500).json({ error });
-            } else {
-                res.status(201).json({ response });
-            }
-        }
+        dbResponseHandler
     );
 });
 
@@ -79,12 +81,18 @@ app.delete("/api/list/:id", (req, res) => {
         `DELETE FROM ShoppingList
          WHERE id = ?`,
         [req.params.id],
-        (error, response) => {
-            if (error) {
-                res.status(500).json({ error });
-            } else {
-                res.status(200).json({ status: true });
-            }
-        }
+        dbResponseHandler
+    );
+});
+
+app.put("/api/list/:id", (req, res) => {
+    db.run(
+        `
+            UPDATE ShoppingList
+            SET item = ?, quantity = ?
+            WHERE id = ?
+        `,
+        [req.body.item, req.body.quantity, req.params.id],
+        dbResponseHandler
     );
 });
